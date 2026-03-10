@@ -1,0 +1,109 @@
+body{
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#6a5cff,#4f8cff);
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    }
+    
+    .container{
+    width:90%;
+    max-width:800px;
+    }
+    
+    .card{
+    background:white;
+    padding:40px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    animation:fade 0.4s;
+    }
+    
+    .center{
+    text-align:center;
+    }
+    
+    .hidden{
+    display:none;
+    }
+    
+    h1,h2{
+    margin-bottom:20px;
+    }
+    
+    .answers{
+    display:grid;
+    gap:10px;
+    margin-top:20px;
+    }
+    
+    .answers label{
+    background:#f2f4ff;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    }
+    
+    .answers input{
+    margin-right:10px;
+    }
+    
+    .nav{
+    display:flex;
+    justify-content:space-between;
+    margin-top:25px;
+    }
+    
+    .btn{
+    background:#5a6cff;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    }
+    
+    .btn-outline{
+    border:2px solid #5a6cff;
+    background:white;
+    color:#5a6cff;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    }
+    
+    .progress-container{
+    width:100%;
+    background:#e4e7ff;
+    height:10px;
+    border-radius:20px;
+    margin-bottom:20px;
+    }
+    
+    #progressBar{
+    height:10px;
+    width:0%;
+    background:#5a6cff;
+    border-radius:20px;
+    transition:0.3s;
+    }
+    
+    #scoreList div{
+    margin:6px 0;
+    }
+    
+    #topTypes{
+    margin-top:15px;
+    font-weight:600;
+    }
+    
+    #majors{
+    margin-top:20px;
+    }
+    
+    @keyframes fade{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1}
+    }
