@@ -1,386 +1,82 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psikotes Minat Bakat RIASEC</title>
 
-<title>Tes Minat Bakat SMA | RIASEC Profile</title>
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-:root{
---primary:#2563eb;
---bg:#f8fafc;
---card:#ffffff;
---text:#1e293b;
-}
-
-body{
-font-family:'Inter',sans-serif;
-background:linear-gradient(135deg,#eef2ff,#f8fafc,#e0f2fe);
-color:var(--text);
-margin:0;
-padding:20px;
-}
-
-.container{
-max-width:900px;
-margin:auto;
-}
-
-.header{
-text-align:center;
-margin-bottom:40px;
-}
-
-.header h1{
-font-size:32px;
-color:#1e3a8a;
-}
-
-.header p{
-color:#475569;
-}
-
-.card{
-background:var(--card);
-padding:30px;
-border-radius:16px;
-box-shadow:0 4px 6px rgba(0,0,0,0.1);
-margin-bottom:20px;
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-4px);
-box-shadow:0 10px 25px rgba(0,0,0,0.12);
-}
-
-.question-item{
-margin-bottom:20px;
-padding:15px;
-background:#f8fafc;
-border-radius:10px;
-border:1px solid #e2e8f0;
-}
-
-.options{
-display:flex;
-gap:15px;
-margin-top:10px;
-}
-
-.options label{
-background:#eef2ff;
-padding:8px 14px;
-border-radius:8px;
-cursor:pointer;
-transition:.2s;
-}
-
-.options label:hover{
-background:#c7d2fe;
-}
-
-button{
-background:linear-gradient(135deg,#2563eb,#1d4ed8);
-color:white;
-border:none;
-padding:12px 24px;
-border-radius:8px;
-font-weight:600;
-cursor:pointer;
-width:100%;
-font-size:16px;
-transition:.2s;
-}
-
-button:hover{
-transform:scale(1.02);
-}
-
-#resultArea{
-display:none;
-}
-
-canvas{
-max-width:100%;
-margin:20px 0;
-}
-
-.description{
-font-size:.95rem;
-line-height:1.6;
-color:#475569;
-}
-
-#whyBox{
-background:#ecfeff;
-border-left:5px solid #06b6d4;
-padding:15px;
-border-radius:10px;
-margin-top:20px;
-}
-
-#scoreDetail{
-background:#f8fafc;
-padding:15px;
-border-radius:10px;
-margin-top:20px;
-font-size:14px;
-}
-
-</style>
 </head>
-
 <body>
 
 <div class="container">
 
-<div class="header">
-<h1>Tes Minat Bakat RIASEC</h1>
-<p>Temukan potensi karir masa depanmu berdasarkan kepribadian.</p>
-</div>
+<!-- HALAMAN START -->
 
-<div id="quizArea" class="card">
+<div id="startPage" class="card center">
 
-<form id="riasecForm">
+<h1>Psikotes Minat Bakat</h1>
 
-<div id="questionsContainer"></div>
+<p>
+Tes ini membantu mengetahui minat dan potensi karier kamu
+menggunakan model <b>RIASEC</b>.
+</p>
 
-<button type="button" onclick="calculateResult()">Lihat Hasil Analisis</button>
-
-</form>
+<button onclick="startTest()" class="btn">Mulai Tes</button>
 
 </div>
 
-<div id="resultArea" class="card">
 
-<h2 style="text-align:center;">Profil Kepribadian Anda</h2>
+<!-- HALAMAN PERTANYAAN -->
 
-<canvas id="riasecChart"></canvas>
+<div id="quizPage" class="card hidden">
 
-<div id="interpretation" class="description"></div>
+<div class="progress-container">
+<div id="progressBar"></div>
+</div>
 
-<button onclick="location.reload()" style="margin-top:20px;background:#64748b;">Ulangi Tes</button>
+<h2 id="questionText"></h2>
+
+<div id="answers" class="answers"></div>
+
+<div class="nav">
+
+<button onclick="prevQuestion()" class="btn-outline">Sebelumnya</button>
+<button onclick="nextQuestion()" class="btn">Selanjutnya</button>
 
 </div>
 
 </div>
 
-<script>
 
-const questions=[
+<!-- HALAMAN HASIL -->
 
-{q:"Saya suka merakit atau memperbaiki peralatan mekanik.",cat:"R"},
-{q:"Saya senang melakukan eksperimen ilmiah.",cat:"I"},
-{q:"Saya menikmati menulis puisi atau cerita pendek.",cat:"A"},
-{q:"Saya suka membantu orang lain menyelesaikan masalah mereka.",cat:"S"},
-{q:"Saya senang memimpin dan mengarahkan kelompok.",cat:"E"},
-{q:"Saya suka menyusun file atau data secara sistematis.",cat:"C"},
-{q:"Saya lebih suka bekerja dengan alat daripada dengan orang.",cat:"R"},
-{q:"Saya senang memecahkan teka-teki logika yang rumit.",cat:"I"},
-{q:"Saya suka menggambar, melukis, atau mendesain sesuatu.",cat:"A"},
-{q:"Mengajar atau melatih orang lain adalah hal yang menyenangkan.",cat:"S"},
-{q:"Saya pandai meyakinkan orang untuk mengikuti ide saya.",cat:"E"},
-{q:"Saya sangat memperhatikan detail dalam laporan keuangan.",cat:"C"},
-{q:"Saya senang bekerja di luar ruangan (outdoor).",cat:"R"},
-{q:"Saya suka membaca jurnal ilmiah atau teknologi.",cat:"I"},
-{q:"Saya senang bermain alat musik atau bernyanyi.",cat:"A"},
-{q:"Saya merasa puas ketika melakukan kegiatan amal.",cat:"S"},
-{q:"Saya bercita-cita menjadi pengusaha atau manajer.",cat:"E"},
-{q:"Saya suka mengikuti aturan dan instruksi yang jelas.",cat:"C"},
-{q:"Saya suka mengoperasikan mesin besar.",cat:"R"},
-{q:"Saya senang menganalisis data statistik.",cat:"I"},
-{q:"Saya suka mencoba gaya berpakaian yang unik.",cat:"A"},
-{q:"Saya senang menjadi tempat curhat teman.",cat:"S"},
-{q:"Saya berani mengambil risiko untuk keuntungan besar.",cat:"E"},
-{q:"Saya suka membuat jadwal harian yang sangat teratur.",cat:"C"}
+<div id="resultPage" class="card hidden">
 
-];
+<h2>Hasil Psikotes Kamu</h2>
 
-const container=document.getElementById('questionsContainer');
+<canvas id="resultChart"></canvas>
 
-questions.forEach((item,index)=>{
+<div id="scoreList"></div>
 
-container.innerHTML+=`
+<div id="topTypes"></div>
 
-<div class="question-item">
+<div id="description"></div>
 
-<p><strong>${index+1}. ${item.q}</strong></p>
+<div id="majors"></div>
 
-<div class="options">
-
-<label><input type="radio" name="q${index}" value="1" required> Ya</label>
-
-<label><input type="radio" name="q${index}" value="0"> Tidak</label>
+<button onclick="restartTest()" class="btn">Ulangi Tes</button>
 
 </div>
 
-<input type="hidden" id="cat${index}" value="${item.cat}">
-
 </div>
 
-`;
-
-});
-
-function calculateResult(){
-
-const scores={R:0,I:0,A:0,S:0,E:0,C:0};
-
-const form=document.forms['riasecForm'];
-
-let answeredAll=true;
-
-questions.forEach((item,index)=>{
-
-const val=form[`q${index}`].value;
-
-if(val===""){answeredAll=false;return;}
-
-if(val==="1")scores[item.cat]++;
-
-});
-
-if(!answeredAll){
-
-alert("Harap jawab semua pertanyaan!");
-
-return;
-
-}
-
-document.getElementById('quizArea').style.display='none';
-
-document.getElementById('resultArea').style.display='block';
-
-renderChart(scores);
-
-showInterpretation(scores);
-
-}
-
-function renderChart(scores){
-
-const ctx=document.getElementById('riasecChart').getContext('2d');
-
-new Chart(ctx,{
-
-type:'radar',
-
-data:{
-
-labels:['Realistic','Investigative','Artistic','Social','Enterprising','Conventional'],
-
-datasets:[{
-
-label:'Skor Kepribadian',
-
-data:[scores.R,scores.I,scores.A,scores.S,scores.E,scores.C],
-
-backgroundColor:'rgba(37, 99, 235, 0.2)',
-
-borderColor:'#2563eb',
-
-pointBackgroundColor:'#2563eb'
-
-}]
-
-},
-
-options:{scales:{r:{beginAtZero:true,max:4}}}
-
-});
-
-}
-
-function showInterpretation(scores){
-
-const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-
-const top=sorted[0][0];
-
-const info={
-
-R:"<b>Realistic:</b> Kamu tipe praktis dan suka bekerja dengan tangan, mesin, atau alam. Karir cocok: Teknik, Pertanian, IT Support.",
-
-I:"<b>Investigative:</b> Kamu pemikir analitis dan suka riset. Karir cocok: Ilmuwan, Dokter, Analis Data.",
-
-A:"<b>Artistic:</b> Kamu kreatif dan ekspresif. Karir cocok: Desainer, Penulis, Musisi.",
-
-S:"<b>Social:</b> Kamu suka menolong dan mengajar. Karir cocok: Psikolog, Guru, Perawat.",
-
-E:"<b>Enterprising:</b> Kamu persuasif dan berjiwa pemimpin. Karir cocok: Pengusaha, Hukum, Marketing.",
-
-C:"<b>Conventional:</b> Kamu teratur dan teliti dengan data. Karir cocok: Akuntan, Administrasi, Auditor."
-
-};
-
-document.getElementById('interpretation').innerHTML=`
-
-<h3>Tipe Dominan Anda: ${top}</h3>
-
-<p>${info[top]}</p>
-
-<p><i>*Hasil ini adalah gambaran umum untuk membantu eksplorasi minatmu.</i></p>
-
-`;
-
-addExtraExplanation(top,scores);
-
-}
-
-function addExtraExplanation(type,scores){
-
-const why={
-
-R:"Minatmu mengarah ke tipe Realistic karena kamu lebih nyaman melakukan aktivitas praktis dan bekerja dengan benda nyata seperti alat atau mesin.",
-
-I:"Minatmu mengarah ke tipe Investigative karena kamu menunjukkan kecenderungan berpikir analitis, suka meneliti, dan memecahkan masalah.",
-
-A:"Minatmu mengarah ke tipe Artistic karena kamu memiliki kecenderungan kreatif dan suka mengekspresikan ide melalui seni atau desain.",
-
-S:"Minatmu mengarah ke tipe Social karena kamu memiliki empati tinggi dan menikmati membantu orang lain.",
-
-E:"Minatmu mengarah ke tipe Enterprising karena kamu memiliki jiwa kepemimpinan dan suka mempengaruhi orang lain.",
-
-C:"Minatmu mengarah ke tipe Conventional karena kamu nyaman dengan sistem yang teratur dan pekerjaan yang membutuhkan ketelitian."
-
-};
-
-const div=document.createElement("div");
-
-div.id="whyBox";
-
-div.innerHTML=`<h3>Kenapa hasilmu seperti ini?</h3><p>${why[type]}</p>`;
-
-document.getElementById("interpretation").appendChild(div);
-
-let scoreHtml="<h3>Detail Skor Kamu</h3>";
-
-for(let k in scores){
-
-scoreHtml+=`<p><b>${k}</b> : ${scores[k]} poin</p>`;
-
-}
-
-const scoreDiv=document.createElement("div");
-
-scoreDiv.id="scoreDetail";
-
-scoreDiv.innerHTML=scoreHtml;
-
-document.getElementById("resultArea").appendChild(scoreDiv);
-
-}
-
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
